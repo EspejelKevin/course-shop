@@ -4,25 +4,33 @@ import (
 	"database/sql"
 	"log"
 
+	"sync"
+
 	"github.com/Masterminds/squirrel"
 	_ "github.com/go-sql-driver/mysql"
 )
+
+var once sync.Once
+var mysqlDatabase *MySQLDatabase
 
 type MySQLDatabase struct {
 	DB *sql.DB
 }
 
 func NewMySQLDatabase(driverName, dataSourceName string) *MySQLDatabase {
-	DB, err := sql.Open(driverName, dataSourceName)
+	once.Do(func() {
+		DB, err := sql.Open(driverName, dataSourceName)
 
-	if err != nil {
-		log.Println("Failed to open database:", err)
-		return nil
-	}
+		if err != nil {
+			log.Println("Failed to open database:", err)
+		}
 
-	return &MySQLDatabase{
-		DB,
-	}
+		mysqlDatabase = &MySQLDatabase{
+			DB,
+		}
+	})
+
+	return mysqlDatabase
 }
 
 func (mysqlDatabase *MySQLDatabase) IsUp() map[string]interface{} {
@@ -49,14 +57,4 @@ func (mysqlDatabase *MySQLDatabase) IsUp() map[string]interface{} {
 	}
 
 	return data
-}
-
-func (mysqlDatabase *MySQLDatabase) Close() error {
-	err := mysqlDatabase.DB.Close()
-
-	if err != nil {
-		log.Println("Error closing the connection:", err)
-	}
-
-	return err
 }

@@ -5,7 +5,7 @@ import "os"
 type Settings struct {
 	DriverName     string
 	DataSourceName string
-	Port           string `default:":3000"`
+	Port           string
 	Namespace      string
 	APIVersion     string
 }

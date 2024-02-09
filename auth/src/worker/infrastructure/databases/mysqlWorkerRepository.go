@@ -1,19 +1,26 @@
-package infrastructure
+package databases
 
 import (
 	"auth/src/shared/domain"
 	"auth/src/worker/domain/entities"
 	"log"
+	"sync"
 )
+
+var once sync.Once
+var mysqlWorkerRepository *MySQLWorkerRepository
 
 type MySQLWorkerRepository struct {
 	db domain.Database
 }
 
 func NewMySQLWorkerRepository(db domain.Database) *MySQLWorkerRepository {
-	return &MySQLWorkerRepository{
-		db,
-	}
+	once.Do(func() {
+		mysqlWorkerRepository = &MySQLWorkerRepository{
+			db,
+		}
+	})
+	return mysqlWorkerRepository
 }
 
 func (mysqlWorkerRepository *MySQLWorkerRepository) IsUp() bool {
