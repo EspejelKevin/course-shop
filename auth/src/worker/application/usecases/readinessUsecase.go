@@ -3,8 +3,10 @@ package usecases
 import (
 	"auth/src/worker/domain/repositories"
 	"log"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type ReadinessUsecase struct {
@@ -17,19 +19,32 @@ func NewReadinessUsecase(dbWorkerService repositories.DBRepository) *ReadinessUs
 	}
 }
 
-func (readinessUsecase *ReadinessUsecase) Execute(ctx *gin.Context) map[string]interface{} {
+func (readinessUsecase *ReadinessUsecase) Execute(ctx *gin.Context) (map[string]interface{}, int) {
 	log.Println("Starting readiness usecase")
 	status := readinessUsecase.dbWorkerService.IsUp()
-	if status {
-		log.Println("Mongo is up")
-		return gin.H{
-			"status":  200,
-			"message": "Mongo is up",
-		}
+	transactionId := uuid.NewString()
+	timestamp := time.Now().Format(time.Stamp)
+
+	if !status {
+		log.Println("Mongo is not up")
+		return map[string]interface{}{
+			"data": map[string]interface{}{
+				"user_message": "Error de conexión a Mongo",
+			},
+			"meta": map[string]interface{}{
+				"transaction_id": transactionId,
+				"timestamp":      timestamp,
+			},
+		}, 500
 	}
-	log.Println("Mongo is down")
-	return gin.H{
-		"status":  500,
-		"message": "Mongo is down",
-	}
+
+	return map[string]interface{}{
+		"data": map[string]interface{}{
+			"status": "Mongo is up",
+		},
+		"meta": map[string]interface{}{
+			"transaction_id": transactionId,
+			"timestamp":      timestamp,
+		},
+	}, 200
 }

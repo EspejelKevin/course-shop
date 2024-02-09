@@ -8,9 +8,8 @@ import (
 
 func Readiness(ctx *gin.Context) {
 	usecase := container.ContainerReadiness()
-	response := usecase.Execute(ctx)
-	status := response["status"].(int)
-	ctx.JSON(status, response["message"])
+	response, statusCode := usecase.Execute(ctx)
+	ctx.JSON(statusCode, response)
 }
 
 func Login(ctx *gin.Context) {
