@@ -11,27 +11,27 @@ var once sync.Once
 var mysqlWorkerRepository *MySQLWorkerRepository
 
 type MySQLWorkerRepository struct {
-	db domain.Database
+	sessionFactory domain.Database
 }
 
-func NewMySQLWorkerRepository(db domain.Database) *MySQLWorkerRepository {
+func NewMySQLWorkerRepository(sessionFactory domain.Database) *MySQLWorkerRepository {
 	once.Do(func() {
 		mysqlWorkerRepository = &MySQLWorkerRepository{
-			db,
+			sessionFactory,
 		}
 	})
 	return mysqlWorkerRepository
 }
 
 func (mysqlWorkerRepository *MySQLWorkerRepository) IsUp() bool {
-	data := mysqlWorkerRepository.db.IsUp()
+	data := mysqlWorkerRepository.sessionFactory.IsUp()
 	status := data["status"].(bool)
 	message := data["message"].(string)
 
 	if status {
-		log.Println("Mongo is up", message)
+		log.Println("MySQL is up", message)
 	} else {
-		log.Println("Mongo is down", message)
+		log.Println("MySQL is down", message)
 	}
 
 	return status

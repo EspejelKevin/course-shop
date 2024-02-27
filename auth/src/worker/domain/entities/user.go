@@ -1,11 +1,11 @@
 package entities
 
 type User struct {
-	Email    string `json:"email" validate:"required"`
-	Password string `json:"password" validate:"required"`
-	Celular  string `json:"celular" validate:"required"`
-	Rol      string `json:"rol" validate:"required"`
-	Name     string `json:"name" validate:"required"`
-	Lastname string `json:"lastname" validate:"required"`
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required,min=8,alphanum"`
+	Celular  string `json:"celular" binding:"required,e164"`
+	Rol      string `json:"rol" binding:"required"`
+	Name     string `json:"name" binding:"required"`
+	Lastname string `json:"lastname" binding:"required"`
 	Verified bool   `json:"verified" default:"false"`
 }

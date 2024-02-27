@@ -2,6 +2,7 @@ package infrastructure
 
 import (
 	"auth/src/shared/infrastructure"
+	"auth/src/shared/infrastructure/middlewares"
 	"fmt"
 
 	"github.com/gin-gonic/gin"
@@ -17,6 +18,6 @@ func Routes(route *gin.Engine) {
 	{
 		authGroup.GET("/readiness", Readiness)
 		authGroup.POST("/login", Login)
-		authGroup.POST("/register", Register)
+		authGroup.POST("/signin", middlewares.ValidatePayloadJSON, SignIn)
 	}
 }

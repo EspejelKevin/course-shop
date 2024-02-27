@@ -6,23 +6,23 @@ import (
 )
 
 type DBWorkerService struct {
-	sessionFactory repositories.DBRepository
+	db repositories.DBRepository
 }
 
-func NewDBWorkerService(sessionFactory repositories.DBRepository) *DBWorkerService {
+func NewDBWorkerService(db repositories.DBRepository) *DBWorkerService {
 	return &DBWorkerService{
-		sessionFactory,
+		db,
 	}
 }
 
 func (dbWorkerRepository *DBWorkerService) IsUp() bool {
-	return dbWorkerRepository.sessionFactory.IsUp()
+	return dbWorkerRepository.db.IsUp()
 }
 
 func (dbWorkerRepository *DBWorkerService) CreateUser(user *entities.User) bool {
-	return dbWorkerRepository.sessionFactory.CreateUser(user)
+	return dbWorkerRepository.db.CreateUser(user)
 }
 
 func (dbWorkerRepository *DBWorkerService) GetUserByEmail(email string) map[string]interface{} {
-	return dbWorkerRepository.sessionFactory.GetUserByEmail(email)
+	return dbWorkerRepository.db.GetUserByEmail(email)
 }

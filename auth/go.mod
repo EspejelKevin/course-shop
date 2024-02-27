@@ -34,6 +34,7 @@ require (
 )
 
 require (
+	github.com/go-playground/validator v9.31.0+incompatible
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/google/uuid v1.6.0
 	github.com/lann/builder v0.0.0-20180802200727-47ae307949d0 // indirect

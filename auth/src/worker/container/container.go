@@ -15,3 +15,12 @@ func ContainerReadiness() *usecases.ReadinessUsecase {
 	readinessUsecase := usecases.NewReadinessUsecase(dbWorkerService)
 	return readinessUsecase
 }
+
+func ContainerSignIn() *usecases.SignInUsecase {
+	settings := infrastructure.NewSettings()
+	mysqlDb := infrastructure.NewMySQLDatabase(settings.DriverName, settings.DataSourceName)
+	dbWorkerRepository := databases.NewMySQLWorkerRepository(mysqlDb)
+	dbWorkerService := services.NewDBWorkerService(dbWorkerRepository)
+	signinUsecase := usecases.NewSignUpUsecase(dbWorkerService)
+	return signinUsecase
+}
