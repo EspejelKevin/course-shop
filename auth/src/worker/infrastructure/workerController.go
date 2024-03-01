@@ -19,7 +19,14 @@ func Readiness(ctx *gin.Context) {
 }
 
 func Login(ctx *gin.Context) {
-	// Login
+	usecase := container.ContainerLogIn()
+	data := usecase.Execute(ctx)
+	switch content := data.(type) {
+	case domain.FailureResponse:
+		ctx.JSON(content.StatusCode, content.Response)
+	case domain.SuccessResponse:
+		ctx.JSON(content.StatusCode, content.Response)
+	}
 }
 
 func SignIn(ctx *gin.Context) {

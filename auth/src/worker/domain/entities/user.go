@@ -10,3 +10,8 @@ type User struct {
 	Lastname string `json:"lastname" binding:"required"`
 	Verified bool   `json:"verified" default:"false"`
 }
+
+type UserIdentity struct {
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required,min=8,alphanum"`
+}

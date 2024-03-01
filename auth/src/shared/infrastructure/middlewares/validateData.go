@@ -12,8 +12,8 @@ import (
 	"github.com/google/uuid"
 )
 
-func ValidatePayloadJSON(ctx *gin.Context) {
-	log.Println("Starting middleware validatePayloadJSON")
+func ValidatePayloadSignIn(ctx *gin.Context) {
+	log.Println("Starting middleware ValidatePayloadSignIn")
 	var userBody entities.User
 	timestamp := time.Now().Format(time.Stamp)
 	transactionId := uuid.NewString()
@@ -32,5 +32,28 @@ func ValidatePayloadJSON(ctx *gin.Context) {
 		return
 	}
 	ctx.Set("user", userBody)
+	ctx.Next()
+}
+
+func ValidatePayloadLogIn(ctx *gin.Context) {
+	log.Println("Starting middleware ValidatePayloadLogIn")
+	var userIdentity entities.UserIdentity
+	timestamp := time.Now().Format(time.Stamp)
+	transactionId := uuid.NewString()
+	start := time.Now()
+
+	if err := ctx.ShouldBindJSON(&userIdentity); err != nil {
+		data := map[string]interface{}{
+			"user_message": "Invalid parameters",
+			"details":      utils.ValidationMsg(err),
+		}
+		timeElapsed := fmt.Sprint(time.Since(start).Milliseconds()) + "ms"
+		response := domain.GenerateResponse(data, "failure", transactionId, timestamp, timeElapsed, 400)
+		content, _ := response.(domain.FailureResponse)
+		ctx.JSON(content.StatusCode, content.Response)
+		ctx.Abort()
+		return
+	}
+	ctx.Set("userIdentity", userIdentity)
 	ctx.Next()
 }

@@ -17,7 +17,7 @@ func Routes(route *gin.Engine) {
 	authGroup := route.Group(prefix)
 	{
 		authGroup.GET("/readiness", Readiness)
-		authGroup.POST("/login", Login)
-		authGroup.POST("/signin", middlewares.ValidatePayloadJSON, SignIn)
+		authGroup.POST("/login", middlewares.ValidatePayloadLogIn, Login)
+		authGroup.POST("/signin", middlewares.ValidatePayloadSignIn, SignIn)
 	}
 }

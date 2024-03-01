@@ -23,7 +23,7 @@ func NewSignUpUsecase(dbWorkerService repositories.DBRepository) *SignInUsecase 
 	}
 }
 
-func (signUpUsecase *SignInUsecase) Execute(ctx *gin.Context) interface{} {
+func (signInUsecase *SignInUsecase) Execute(ctx *gin.Context) interface{} {
 	log.Println("Starting signIn usecase")
 	timestamp := time.Now().Format(time.Stamp)
 	transactionId := uuid.NewString()
@@ -31,7 +31,7 @@ func (signUpUsecase *SignInUsecase) Execute(ctx *gin.Context) interface{} {
 	_user, _ := ctx.Get("user")
 	user := _user.(entities.User)
 
-	userDB := signUpUsecase.dbWorkerService.GetUserByEmail(user.Email)
+	userDB := signInUsecase.dbWorkerService.GetUserByEmail(user.Email)
 
 	if userDB != nil {
 		log.Println("User already exists")
@@ -41,7 +41,7 @@ func (signUpUsecase *SignInUsecase) Execute(ctx *gin.Context) interface{} {
 	}
 
 	user.Password = utils.HashPassword(user.Password)
-	result := signUpUsecase.dbWorkerService.CreateUser(&user)
+	result := signInUsecase.dbWorkerService.CreateUser(&user)
 
 	if !result {
 		log.Println("Error to create user")
