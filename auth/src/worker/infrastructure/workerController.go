@@ -25,5 +25,10 @@ func Login(ctx *gin.Context) {
 func SignIn(ctx *gin.Context) {
 	usecase := container.ContainerSignIn()
 	data := usecase.Execute(ctx)
-	ctx.JSON(200, data)
+	switch content := data.(type) {
+	case domain.FailureResponse:
+		ctx.JSON(content.StatusCode, content.Response)
+	case domain.SuccessResponse:
+		ctx.JSON(content.StatusCode, content.Response)
+	}
 }

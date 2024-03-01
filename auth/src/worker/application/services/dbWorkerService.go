@@ -23,6 +23,6 @@ func (dbWorkerRepository *DBWorkerService) CreateUser(user *entities.User) bool 
 	return dbWorkerRepository.db.CreateUser(user)
 }
 
-func (dbWorkerRepository *DBWorkerService) GetUserByEmail(email string) map[string]interface{} {
+func (dbWorkerRepository *DBWorkerService) GetUserByEmail(email string) *entities.User {
 	return dbWorkerRepository.db.GetUserByEmail(email)
 }

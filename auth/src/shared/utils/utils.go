@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/go-playground/validator/v10"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func ValidationMsg(err error) []string {
@@ -20,4 +21,14 @@ func ValidationMsg(err error) []string {
 	}
 
 	return errors
+}
+
+func HashPassword(password string) string {
+	bytes, _ := bcrypt.GenerateFromPassword([]byte(password), 14)
+	return string(bytes)
+}
+
+func CheckPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
 }

@@ -58,3 +58,7 @@ func (mysqlDatabase *MySQLDatabase) IsUp() map[string]interface{} {
 
 	return data
 }
+
+func (mysqlDatabase *MySQLDatabase) GetDb() *sql.DB {
+	return mysqlDatabase.DB
+}

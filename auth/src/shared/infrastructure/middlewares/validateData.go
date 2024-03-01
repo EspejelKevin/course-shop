@@ -31,5 +31,6 @@ func ValidatePayloadJSON(ctx *gin.Context) {
 		ctx.Abort()
 		return
 	}
+	ctx.Set("user", userBody)
 	ctx.Next()
 }
