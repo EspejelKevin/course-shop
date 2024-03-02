@@ -6,6 +6,7 @@ import (
 	"auth/src/worker/domain/entities"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -55,5 +56,31 @@ func ValidatePayloadLogIn(ctx *gin.Context) {
 		return
 	}
 	ctx.Set("userIdentity", userIdentity)
+	ctx.Next()
+}
+
+func ValidateBearerToken(ctx *gin.Context) {
+	log.Println("Starting middleware ValidateBearerToken")
+	timestamp := time.Now().Format(time.Stamp)
+	transactionId := uuid.NewString()
+	start := time.Now()
+
+	authorizationHeader := ctx.GetHeader("Authorization")
+	token := strings.Split(authorizationHeader, " ")
+
+	if len(token) < 2 {
+		data := map[string]interface{}{
+			"user_message": "User unauthorized",
+			"details":      []string{"missing header 'Authorization' or bad format bearer token"},
+		}
+		timeElapsed := fmt.Sprint(time.Since(start).Milliseconds()) + "ms"
+		response := domain.GenerateResponse(data, "failure", transactionId, timestamp, timeElapsed, 401)
+		content, _ := response.(domain.FailureResponse)
+		ctx.JSON(content.StatusCode, content.Response)
+		ctx.Abort()
+		return
+	}
+
+	ctx.Set("token", token[1])
 	ctx.Next()
 }

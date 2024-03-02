@@ -33,3 +33,12 @@ func ContainerLogIn() *usecases.LogInUsecase {
 	loginUsecase := usecases.NewLogInUsecase(dbWorkerService)
 	return loginUsecase
 }
+
+func ContainerValidateToken() *usecases.ValidateTokenUsecase {
+	settings := infrastructure.NewSettings()
+	mysqlDb := infrastructure.NewMySQLDatabase(settings.DriverName, settings.DataSourceName)
+	dbWorkerRepository := databases.NewMySQLWorkerRepository(mysqlDb)
+	dbWorkerService := services.NewDBWorkerService(dbWorkerRepository)
+	validatetokenusecase := usecases.NewValidateTokenUsecase(dbWorkerService)
+	return validatetokenusecase
+}

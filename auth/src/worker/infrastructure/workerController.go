@@ -39,3 +39,14 @@ func SignIn(ctx *gin.Context) {
 		ctx.JSON(content.StatusCode, content.Response)
 	}
 }
+
+func ValidateToken(ctx *gin.Context) {
+	usecase := container.ContainerValidateToken()
+	data := usecase.Execute(ctx)
+	switch content := data.(type) {
+	case domain.FailureResponse:
+		ctx.JSON(content.StatusCode, content.Response)
+	case domain.SuccessResponse:
+		ctx.JSON(content.StatusCode, content.Response)
+	}
+}

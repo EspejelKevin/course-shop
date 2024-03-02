@@ -30,7 +30,7 @@ func CreateAccessToken(user map[string]interface{}) (string, error) {
 func ValidateAccessToken(tokenFromRequest string) (map[string]interface{}, error) {
 	token, err := jwt.Parse(tokenFromRequest, func(t *jwt.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg	"])
+			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
 		}
 		return []byte(settings.SecretKey), nil
 	})
@@ -46,5 +46,5 @@ func ValidateAccessToken(tokenFromRequest string) (map[string]interface{}, error
 		return user, nil
 	}
 
-	return map[string]interface{}{}, fmt.Errorf("invalid token")
+	return map[string]interface{}{}, fmt.Errorf("invalid token or token has expired")
 }

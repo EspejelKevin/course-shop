@@ -11,7 +11,7 @@ import (
 var settings = infrastructure.NewSettings()
 var namespace = settings.Namespace
 var apiVersion = settings.APIVersion
-var prefix = fmt.Sprintf("/%s/%s", namespace, apiVersion)
+var prefix = fmt.Sprintf("/%s/api/%s", namespace, apiVersion)
 
 func Routes(route *gin.Engine) {
 	authGroup := route.Group(prefix)
@@ -19,5 +19,6 @@ func Routes(route *gin.Engine) {
 		authGroup.GET("/readiness", Readiness)
 		authGroup.POST("/login", middlewares.ValidatePayloadLogIn, Login)
 		authGroup.POST("/signin", middlewares.ValidatePayloadSignIn, SignIn)
+		authGroup.GET("/validation", middlewares.ValidateBearerToken, ValidateToken)
 	}
 }

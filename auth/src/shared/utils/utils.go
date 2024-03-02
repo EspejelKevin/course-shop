@@ -32,3 +32,22 @@ func CheckPasswordHash(password, hashedPassword string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 	return err == nil
 }
+
+func Lower(v any) any {
+	switch v := v.(type) {
+	case []any:
+		lv := make([]any, len(v))
+		for i := range v {
+			lv[i] = Lower(v[i])
+		}
+		return lv
+	case map[string]any:
+		lv := make(map[string]any, len(v))
+		for mk, mv := range v {
+			lv[strings.ToLower(mk)] = mv
+		}
+		return lv
+	default:
+		return v
+	}
+}
