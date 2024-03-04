@@ -14,7 +14,7 @@ import (
 )
 
 func ValidatePayloadSignIn(ctx *gin.Context) {
-	log.Println("Starting middleware ValidatePayloadSignIn")
+	log.Println("Starting middleware ValidatePayloadSignUp")
 	var userBody entities.User
 	timestamp := time.Now().Format(time.Stamp)
 	transactionId := uuid.NewString()

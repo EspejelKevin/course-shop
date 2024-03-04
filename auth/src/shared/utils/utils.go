@@ -1,8 +1,12 @@
 package utils
 
 import (
+	"encoding/base64"
 	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
+	"text/template"
 
 	"github.com/go-playground/validator/v10"
 	"golang.org/x/crypto/bcrypt"
@@ -50,4 +54,33 @@ func Lower(v any) any {
 	default:
 		return v
 	}
+}
+
+func Encode(s string) string {
+	data := base64.StdEncoding.EncodeToString([]byte(s))
+	return string(data)
+}
+
+func Decode(s string) string {
+	data, _ := base64.StdEncoding.DecodeString(s)
+	return string(data)
+}
+
+func ParseTemplateDir(dir string) (*template.Template, error) {
+	var paths []string
+	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !info.IsDir() {
+			paths = append(paths, path)
+		}
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return template.ParseFiles(paths...)
 }

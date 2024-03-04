@@ -26,3 +26,7 @@ func (dbWorkerRepository *DBWorkerService) CreateUser(user *entities.User) bool 
 func (dbWorkerRepository *DBWorkerService) GetUserByEmail(email string) *entities.User {
 	return dbWorkerRepository.db.GetUserByEmail(email)
 }
+
+func (dbWorkerRepository *DBWorkerService) UpdateUserVerificationCode(email, code string) bool {
+	return dbWorkerRepository.db.UpdateUserVerificationCode(email, code)
+}

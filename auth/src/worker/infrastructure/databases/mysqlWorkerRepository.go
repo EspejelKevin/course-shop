@@ -11,6 +11,7 @@ import (
 
 var once sync.Once
 var mysqlWorkerRepository *MySQLWorkerRepository
+var messageError = "Failed to create sql query:"
 
 type MySQLWorkerRepository struct {
 	sessionFactory domain.Database
@@ -43,7 +44,7 @@ func (mysqlWorkerRepository *MySQLWorkerRepository) GetUserByEmail(email string)
 	query, args, err := squirrel.Select("*").From("users").Where(squirrel.Eq{"email": email}).ToSql()
 	var user entities.User
 	if err != nil {
-		log.Println("Failed to create sql query:", err)
+		log.Println(messageError, err)
 		return nil
 	}
 
@@ -73,7 +74,7 @@ func (mysqlWorkerRepository *MySQLWorkerRepository) CreateUser(user *entities.Us
 		Values(user.Name, user.Lastname, user.Password, user.Email, user.Phone, user.Rol).
 		ToSql()
 	if err != nil {
-		log.Println("Failed to create sql query:", err)
+		log.Println(messageError, err)
 		return false
 	}
 
@@ -81,6 +82,26 @@ func (mysqlWorkerRepository *MySQLWorkerRepository) CreateUser(user *entities.Us
 	_, err = db.Exec(query, args...)
 	if err != nil {
 		log.Println("Failed to insert user:", err)
+		return false
+	}
+
+	return true
+}
+
+func (mysqlWorkerRepository *MySQLWorkerRepository) UpdateUserVerificationCode(email, code string) bool {
+	query, args, err := squirrel.Update("users").
+		Set("code", code).
+		Where(squirrel.Eq{"email": email}).
+		ToSql()
+	if err != nil {
+		log.Println(messageError, err)
+		return false
+	}
+
+	db := mysqlWorkerRepository.sessionFactory.GetDb()
+	_, err = db.Exec(query, args...)
+	if err != nil {
+		log.Println("Failed to update user:", err)
 		return false
 	}
 

@@ -14,11 +14,22 @@ var apiVersion = settings.APIVersion
 var prefix = fmt.Sprintf("/%s/api/%s", namespace, apiVersion)
 
 func Routes(route *gin.Engine) {
+	healthChecks := route.Group(prefix)
+	{
+		healthChecks.GET("/liveness", Liveness)
+		healthChecks.GET("/readiness", Readiness)
+	}
+
 	authGroup := route.Group(prefix)
 	{
-		authGroup.GET("/readiness", Readiness)
 		authGroup.POST("/login", middlewares.ValidatePayloadLogIn, Login)
-		authGroup.POST("/signin", middlewares.ValidatePayloadSignIn, SignIn)
-		authGroup.GET("/validation", middlewares.ValidateBearerToken, ValidateToken)
+		authGroup.POST("/signup", middlewares.ValidatePayloadSignIn, SignUp)
+	}
+
+	validationsGroup := route.Group(prefix)
+	{
+		validationsGroup.GET("/validations/token", middlewares.ValidateBearerToken, ValidateToken)
+		validationsGroup.POST("/validations/email")
+		validationsGroup.POST("/validations/phone")
 	}
 }

@@ -5,24 +5,41 @@ import (
 	"auth/src/worker/application/services"
 	"auth/src/worker/application/usecases"
 	"auth/src/worker/infrastructure/databases"
+	"auth/src/worker/infrastructure/servers"
 )
 
 func ContainerReadiness() *usecases.ReadinessUsecase {
 	settings := infrastructure.NewSettings()
 	mysqlDb := infrastructure.NewMySQLDatabase(settings.DriverName, settings.DataSourceName)
+	mailServer := infrastructure.NewMailServer(
+		settings.SmtpHost,
+		settings.SmtpUser,
+		settings.SmtpPass,
+		settings.SmtpPort,
+	)
 	dbWorkerRepository := databases.NewMySQLWorkerRepository(mysqlDb)
+	mailWorkerRepository := servers.NewMailWorkerRepository(mailServer)
 	dbWorkerService := services.NewDBWorkerService(dbWorkerRepository)
-	readinessUsecase := usecases.NewReadinessUsecase(dbWorkerService)
+	mailWorkerService := services.NewMailWorkerService(mailWorkerRepository)
+	readinessUsecase := usecases.NewReadinessUsecase(dbWorkerService, mailWorkerService)
 	return readinessUsecase
 }
 
-func ContainerSignIn() *usecases.SignInUsecase {
+func ContainerSignUp() *usecases.SignUpUsecase {
 	settings := infrastructure.NewSettings()
 	mysqlDb := infrastructure.NewMySQLDatabase(settings.DriverName, settings.DataSourceName)
+	mailServer := infrastructure.NewMailServer(
+		settings.SmtpHost,
+		settings.SmtpUser,
+		settings.SmtpPass,
+		settings.SmtpPort,
+	)
 	dbWorkerRepository := databases.NewMySQLWorkerRepository(mysqlDb)
+	mailWorkerRepository := servers.NewMailWorkerRepository(mailServer)
 	dbWorkerService := services.NewDBWorkerService(dbWorkerRepository)
-	signinUsecase := usecases.NewSignUpUsecase(dbWorkerService)
-	return signinUsecase
+	mailWorkerService := services.NewMailWorkerService(mailWorkerRepository)
+	signupUsecase := usecases.NewSignUpUsecase(dbWorkerService, mailWorkerService, settings)
+	return signupUsecase
 }
 
 func ContainerLogIn() *usecases.LogInUsecase {

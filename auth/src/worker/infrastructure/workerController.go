@@ -7,6 +7,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func Liveness(ctx *gin.Context) {
+	ctx.JSON(200, gin.H{
+		"status": "Service running",
+	})
+}
+
 func Readiness(ctx *gin.Context) {
 	usecase := container.ContainerReadiness()
 	data := usecase.Execute(ctx)
@@ -29,8 +35,8 @@ func Login(ctx *gin.Context) {
 	}
 }
 
-func SignIn(ctx *gin.Context) {
-	usecase := container.ContainerSignIn()
+func SignUp(ctx *gin.Context) {
+	usecase := container.ContainerSignUp()
 	data := usecase.Execute(ctx)
 	switch content := data.(type) {
 	case domain.FailureResponse:
