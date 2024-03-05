@@ -37,14 +37,21 @@ func (logInUsecase *LogInUsecase) Execute(ctx *gin.Context) interface{} {
 
 	if userDB == nil {
 		log.Println("User does not exist")
-		data := map[string]interface{}{"user_message": "User not found. Verify your email"}
+		data := map[string]interface{}{"user_message": "Invalid email"}
 		timeElapsed := fmt.Sprint(time.Since(start).Milliseconds()) + "ms"
-		return domain.GenerateResponse(data, "failure", transactionId, timestamp, timeElapsed, 404)
+		return domain.GenerateResponse(data, "failure", transactionId, timestamp, timeElapsed, 400)
+	}
+
+	if !userDB.Verified {
+		log.Println("User not verified")
+		data := map[string]interface{}{"user_message": "Please verify your email"}
+		timeElapsed := fmt.Sprint(time.Since(start).Milliseconds()) + "ms"
+		return domain.GenerateResponse(data, "failure", transactionId, timestamp, timeElapsed, 403)
 	}
 
 	if !utils.CheckPasswordHash(userIdentity.Password, userDB.Password) {
 		log.Println("The hashed password does not match the password from request")
-		data := map[string]interface{}{"user_message": "Incorrect password"}
+		data := map[string]interface{}{"user_message": "Invalid password"}
 		timeElapsed := fmt.Sprint(time.Since(start).Milliseconds()) + "ms"
 		return domain.GenerateResponse(data, "failure", transactionId, timestamp, timeElapsed, 400)
 	}

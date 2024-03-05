@@ -13,6 +13,8 @@ import (
 	"github.com/google/uuid"
 )
 
+var invalidParameters = "Invalid parameters"
+
 func ValidatePayloadSignIn(ctx *gin.Context) {
 	log.Println("Starting middleware ValidatePayloadSignUp")
 	var userBody entities.User
@@ -22,7 +24,7 @@ func ValidatePayloadSignIn(ctx *gin.Context) {
 
 	if err := ctx.ShouldBindJSON(&userBody); err != nil {
 		data := map[string]interface{}{
-			"user_message": "Invalid parameters",
+			"user_message": invalidParameters,
 			"details":      utils.ValidationMsg(err),
 		}
 		timeElapsed := fmt.Sprint(time.Since(start).Milliseconds()) + "ms"
@@ -45,7 +47,7 @@ func ValidatePayloadLogIn(ctx *gin.Context) {
 
 	if err := ctx.ShouldBindJSON(&userIdentity); err != nil {
 		data := map[string]interface{}{
-			"user_message": "Invalid parameters",
+			"user_message": invalidParameters,
 			"details":      utils.ValidationMsg(err),
 		}
 		timeElapsed := fmt.Sprint(time.Since(start).Milliseconds()) + "ms"
@@ -94,7 +96,7 @@ func ValidateVerificationCode(ctx *gin.Context) {
 
 	if err := ctx.ShouldBindJSON(&verificationCode); err != nil {
 		data := map[string]interface{}{
-			"user_message": "Invalid parameters",
+			"user_message": invalidParameters,
 			"details":      utils.ValidationMsg(err),
 		}
 		timeElapsed := fmt.Sprint(time.Since(start).Milliseconds()) + "ms"

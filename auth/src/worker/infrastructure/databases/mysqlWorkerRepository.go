@@ -41,7 +41,10 @@ func (mysqlWorkerRepository *MySQLWorkerRepository) IsUp() bool {
 }
 
 func (mysqlWorkerRepository *MySQLWorkerRepository) GetUserByEmail(email string) *entities.User {
-	query, args, err := squirrel.Select("*").From("users").Where(squirrel.Eq{"email": email}).ToSql()
+	query, args, err := squirrel.Select("id", "name", "lastname", "password", "email", "verified", "phone", "rol").
+		From("users").
+		Where(squirrel.Eq{"email": email}).
+		ToSql()
 	var user entities.User
 	if err != nil {
 		log.Println(messageError, err)

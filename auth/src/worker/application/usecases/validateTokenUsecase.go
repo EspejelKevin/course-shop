@@ -42,6 +42,7 @@ func (validateTokenUsecase *ValidateTokenUsecase) Execute(ctx *gin.Context) inte
 	}
 
 	delete(payload, "password")
+	delete(payload, "id")
 
 	log.Println("Validated token successfully")
 	data := map[string]interface{}{"status": "Valid token", "payload": payload}
