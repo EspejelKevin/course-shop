@@ -68,6 +68,50 @@ func (mysqlWorkerRepository *MySQLWorkerRepository) GetUserByEmail(email string)
 	return &user
 }
 
+func (mysqlWorkerRepository *MySQLWorkerRepository) UpdateUserVerification(code string) bool {
+	query, args, err := squirrel.Select("verified", "email").
+		From("users").
+		Where(squirrel.Eq{"code": code}).
+		ToSql()
+	var verified bool
+	var email string
+	if err != nil {
+		log.Println(messageError, err)
+		return false
+	}
+
+	db := mysqlWorkerRepository.sessionFactory.GetDb()
+	row := db.QueryRow(query, args...)
+	err = row.Scan(&verified, &email)
+	if err != nil {
+		log.Println("Failed to bind data to user:", err)
+		return false
+	}
+
+	if verified {
+		log.Println("User verified, ", email)
+		return false
+	}
+
+	query, args, err = squirrel.Update("users").
+		Set("code", "").
+		Set("verified", true).
+		Where(squirrel.Eq{"email": email}).
+		ToSql()
+	if err != nil {
+		log.Println(messageError, err)
+		return false
+	}
+
+	_, err = db.Exec(query, args...)
+	if err != nil {
+		log.Println("Failed to update user:", err)
+		return false
+	}
+
+	return true
+}
+
 func (mysqlWorkerRepository *MySQLWorkerRepository) CreateUser(user *entities.User) bool {
 	query, args, err := squirrel.Insert("users").
 		Columns("name", "lastname", "password", "email", "phone", "rol").

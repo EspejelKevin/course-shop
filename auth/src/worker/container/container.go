@@ -38,8 +38,8 @@ func ContainerSignUp() *usecases.SignUpUsecase {
 	mailWorkerRepository := servers.NewMailWorkerRepository(mailServer)
 	dbWorkerService := services.NewDBWorkerService(dbWorkerRepository)
 	mailWorkerService := services.NewMailWorkerService(mailWorkerRepository)
-	signupUsecase := usecases.NewSignUpUsecase(dbWorkerService, mailWorkerService, settings)
-	return signupUsecase
+	signUpUsecase := usecases.NewSignUpUsecase(dbWorkerService, mailWorkerService, settings)
+	return signUpUsecase
 }
 
 func ContainerLogIn() *usecases.LogInUsecase {
@@ -56,6 +56,15 @@ func ContainerValidateToken() *usecases.ValidateTokenUsecase {
 	mysqlDb := infrastructure.NewMySQLDatabase(settings.DriverName, settings.DataSourceName)
 	dbWorkerRepository := databases.NewMySQLWorkerRepository(mysqlDb)
 	dbWorkerService := services.NewDBWorkerService(dbWorkerRepository)
-	validatetokenusecase := usecases.NewValidateTokenUsecase(dbWorkerService)
-	return validatetokenusecase
+	validateTokenUsecase := usecases.NewValidateTokenUsecase(dbWorkerService)
+	return validateTokenUsecase
+}
+
+func ContainerValidateEmail() *usecases.ValidateEmailUsecase {
+	settings := infrastructure.NewSettings()
+	mysqlDb := infrastructure.NewMySQLDatabase(settings.DriverName, settings.DataSourceName)
+	dbWorkerRepository := databases.NewMySQLWorkerRepository(mysqlDb)
+	dbWorkerService := services.NewDBWorkerService(dbWorkerRepository)
+	validateEmailUsecase := usecases.NewValidateEmailUsecase(dbWorkerService)
+	return validateEmailUsecase
 }

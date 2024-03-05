@@ -15,3 +15,7 @@ type UserIdentity struct {
 	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required,min=8,alphanum"`
 }
+
+type VerificationCode struct {
+	Code string `json:"code" binding:"required,len=20"`
+}

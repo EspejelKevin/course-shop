@@ -15,18 +15,22 @@ func NewDBWorkerService(db repositories.DBRepository) *DBWorkerService {
 	}
 }
 
-func (dbWorkerRepository *DBWorkerService) IsUp() bool {
-	return dbWorkerRepository.db.IsUp()
+func (dbWorkerService *DBWorkerService) IsUp() bool {
+	return dbWorkerService.db.IsUp()
 }
 
-func (dbWorkerRepository *DBWorkerService) CreateUser(user *entities.User) bool {
-	return dbWorkerRepository.db.CreateUser(user)
+func (dbWorkerService *DBWorkerService) CreateUser(user *entities.User) bool {
+	return dbWorkerService.db.CreateUser(user)
 }
 
-func (dbWorkerRepository *DBWorkerService) GetUserByEmail(email string) *entities.User {
-	return dbWorkerRepository.db.GetUserByEmail(email)
+func (dbWorkerService *DBWorkerService) GetUserByEmail(email string) *entities.User {
+	return dbWorkerService.db.GetUserByEmail(email)
 }
 
-func (dbWorkerRepository *DBWorkerService) UpdateUserVerificationCode(email, code string) bool {
-	return dbWorkerRepository.db.UpdateUserVerificationCode(email, code)
+func (dbWorkerService *DBWorkerService) UpdateUserVerificationCode(email, code string) bool {
+	return dbWorkerService.db.UpdateUserVerificationCode(email, code)
+}
+
+func (dbWorkerService *DBWorkerService) UpdateUserVerification(code string) bool {
+	return dbWorkerService.db.UpdateUserVerification(code)
 }

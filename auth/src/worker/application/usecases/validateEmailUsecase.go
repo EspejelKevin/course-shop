@@ -1,10 +1,15 @@
 package usecases
 
 import (
+	"auth/src/shared/domain"
+	"auth/src/shared/utils"
 	"auth/src/worker/domain/repositories"
+	"fmt"
 	"log"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type ValidateEmailUsecase struct {
@@ -19,11 +24,24 @@ func NewValidateEmailUsecase(dbWorkerService repositories.DBRepository) *Validat
 
 func (validateEmailUsecase *ValidateEmailUsecase) Execute(ctx *gin.Context) interface{} {
 	log.Println("Starting validate email usecase")
-	// timestamp := time.Now().Format(time.Stamp)
-	// transactionId := uuid.NewString()
-	// start := time.Now()
-	// _email, _ := ctx.Get("email")
-	// email := _email.(string)
+	timestamp := time.Now().Format(time.Stamp)
+	transactionId := uuid.NewString()
+	start := time.Now()
+	_code, _ := ctx.Get("code")
+	code := _code.(string)
+	codeEncoded := utils.Encode(code)
 
-	return "Cuenta verificada"
+	resutl := validateEmailUsecase.dbWorkerService.UpdateUserVerification(codeEncoded)
+
+	if !resutl {
+		log.Println("Error verifying user. Check code: ", codeEncoded)
+		data := map[string]interface{}{"user_message": "User already verified"}
+		timeElapsed := fmt.Sprint(time.Since(start).Milliseconds()) + "ms"
+		return domain.GenerateResponse(data, "failure", transactionId, timestamp, timeElapsed, 409)
+	}
+
+	log.Println("User verified, code:", codeEncoded)
+	data := map[string]interface{}{"status": "Email verified successfully"}
+	timeElapsed := fmt.Sprint(time.Since(start).Milliseconds()) + "ms"
+	return domain.GenerateResponse(data, "", transactionId, timestamp, timeElapsed, 200)
 }

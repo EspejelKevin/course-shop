@@ -61,11 +61,6 @@ func Encode(s string) string {
 	return string(data)
 }
 
-func Decode(s string) string {
-	data, _ := base64.StdEncoding.DecodeString(s)
-	return string(data)
-}
-
 func ParseTemplateDir(dir string) (*template.Template, error) {
 	var paths []string
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
