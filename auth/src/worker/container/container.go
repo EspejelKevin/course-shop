@@ -72,6 +72,15 @@ func ContainerValidateEmail() *usecases.ValidateEmailUsecase {
 	return validateEmailUsecase
 }
 
+func ContainerValidatePhone() *usecases.ValidatePhoneUsecase {
+	settings := infrastructure.NewSettings()
+	mysqlDb := infrastructure.NewMySQLDatabase(settings.DriverName, settings.DataSourceName)
+	dbWorkerRepository := databases.NewMySQLWorkerRepository(mysqlDb)
+	dbWorkerService := services.NewDBWorkerService(dbWorkerRepository)
+	validatePhoneUsecase := usecases.NewValidatePhoneUsecase(dbWorkerService)
+	return validatePhoneUsecase
+}
+
 func ContainerConfirmPhone() *usecases.ConfirmPhoneUsecase {
 	settings := infrastructure.NewSettings()
 	mysqlDb := infrastructure.NewMySQLDatabase(settings.DriverName, settings.DataSourceName)

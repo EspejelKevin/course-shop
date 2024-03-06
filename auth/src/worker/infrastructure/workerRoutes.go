@@ -30,7 +30,7 @@ func Routes(route *gin.Engine) {
 	{
 		validationsGroup.GET("/validations/token", middlewares.ValidateBearerToken, ValidateToken)
 		validationsGroup.POST("/validations/email", middlewares.ValidateVerificationCode, ValidateEmail)
-		validationsGroup.POST("/validations/phone", middlewares.ValidateBearerToken)
+		validationsGroup.POST("/validations/phone", middlewares.ValidateVerificationCode, ValidatePhone)
 	}
 
 	confirmationsGroup := route.Group(prefix)

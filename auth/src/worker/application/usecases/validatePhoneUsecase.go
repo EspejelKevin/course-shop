@@ -12,18 +12,18 @@ import (
 	"github.com/google/uuid"
 )
 
-type ValidateEmailUsecase struct {
+type ValidatePhoneUsecase struct {
 	dbWorkerService repositories.DBRepository
 }
 
-func NewValidateEmailUsecase(dbWorkerService repositories.DBRepository) *ValidateEmailUsecase {
-	return &ValidateEmailUsecase{
+func NewValidatePhoneUsecase(dbWorkerService repositories.DBRepository) *ValidatePhoneUsecase {
+	return &ValidatePhoneUsecase{
 		dbWorkerService,
 	}
 }
 
-func (validateEmailUsecase *ValidateEmailUsecase) Execute(ctx *gin.Context) interface{} {
-	log.Println("Starting validate email usecase")
+func (validatePhoneUsecase *ValidatePhoneUsecase) Execute(ctx *gin.Context) interface{} {
+	log.Println("Starting validate phone usecase")
 	timestamp := time.Now().Format(time.Stamp)
 	transactionId := uuid.NewString()
 	start := time.Now()
@@ -31,17 +31,17 @@ func (validateEmailUsecase *ValidateEmailUsecase) Execute(ctx *gin.Context) inte
 	code := _code.(string)
 	codeEncoded := utils.Encode(code)
 
-	result := validateEmailUsecase.dbWorkerService.UpdateUserEmailVerification(codeEncoded)
+	result := validatePhoneUsecase.dbWorkerService.UpdateUserPhoneVerification(codeEncoded)
 
 	if !result {
 		log.Println("Error verifying user. Check code: ", codeEncoded)
-		data := map[string]interface{}{"user_message": "Email already verified"}
+		data := map[string]interface{}{"user_message": "Phone already verified"}
 		timeElapsed := fmt.Sprint(time.Since(start).Milliseconds()) + "ms"
 		return domain.GenerateResponse(data, "failure", transactionId, timestamp, timeElapsed, 409)
 	}
 
-	log.Println("User verified, code:", codeEncoded)
-	data := map[string]interface{}{"status": "Email verified successfully"}
+	log.Println("Phone verified, code:", codeEncoded)
+	data := map[string]interface{}{"status": "Phone verified successfully"}
 	timeElapsed := fmt.Sprint(time.Since(start).Milliseconds()) + "ms"
 	return domain.GenerateResponse(data, "", transactionId, timestamp, timeElapsed, 200)
 }
