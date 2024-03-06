@@ -31,7 +31,7 @@ func (validateEmailUsecase *ValidateEmailUsecase) Execute(ctx *gin.Context) inte
 	code := _code.(string)
 	codeEncoded := utils.Encode(code)
 
-	resutl := validateEmailUsecase.dbWorkerService.UpdateUserVerification(codeEncoded)
+	resutl := validateEmailUsecase.dbWorkerService.UpdateUserEmailVerification(codeEncoded)
 
 	if !resutl {
 		log.Println("Error verifying user. Check code: ", codeEncoded)

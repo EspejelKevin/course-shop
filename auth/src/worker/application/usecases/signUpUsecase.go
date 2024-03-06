@@ -59,7 +59,7 @@ func (signUpUsecase *SignUpUsecase) Execute(ctx *gin.Context) interface{} {
 
 	code := randstr.String(20)
 	codeEncoded := utils.Encode(code)
-	result = signUpUsecase.dbWorkerService.UpdateUserVerificationCode(user.Email, codeEncoded)
+	result = signUpUsecase.dbWorkerService.UpdateUserEmailVerificationCode(user.Email, codeEncoded)
 
 	if !result {
 		log.Println("Error to update user verification code")
@@ -72,7 +72,6 @@ func (signUpUsecase *SignUpUsecase) Execute(ctx *gin.Context) interface{} {
 	}
 
 	emailData := entities.Email{
-		URL:     signUpUsecase.settings.URLValidateMail,
 		Name:    user.Name,
 		Subject: "Verification Code",
 		From:    signUpUsecase.settings.EmailFrom,

@@ -67,3 +67,23 @@ func ValidateEmail(ctx *gin.Context) {
 		ctx.JSON(content.StatusCode, content.Response)
 	}
 }
+
+func ConfirmPhone(ctx *gin.Context) {
+	var response interface{}
+	usecaseValidateToken := container.ContainerValidateToken()
+	usecaseConfirmPhone := container.ContainerConfirmPhone()
+	data := usecaseValidateToken.Execute(ctx)
+	switch content := data.(type) {
+	case domain.FailureResponse:
+		response = usecaseConfirmPhone.Execute(content.Response.Data, content.StatusCode)
+	case domain.SuccessResponse:
+		response = usecaseConfirmPhone.Execute(content.Response.Data, content.StatusCode)
+	}
+
+	switch content := response.(type) {
+	case domain.FailureResponse:
+		ctx.JSON(content.StatusCode, content.Response)
+	case domain.SuccessResponse:
+		ctx.JSON(content.StatusCode, content.Response)
+	}
+}

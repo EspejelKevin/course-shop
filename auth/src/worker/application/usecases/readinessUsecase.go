@@ -12,14 +12,17 @@ import (
 )
 
 type ReadinessUsecase struct {
-	dbWorkerService   repositories.DBRepository
-	mailWorkerService repositories.MailRepository
+	dbWorkerService    repositories.DBRepository
+	mailWorkerService  repositories.MailRepository
+	phoneWorkerService repositories.PhoneRepository
 }
 
-func NewReadinessUsecase(dbWorkerService repositories.DBRepository, mailWorkerService repositories.MailRepository) *ReadinessUsecase {
+func NewReadinessUsecase(dbWorkerService repositories.DBRepository,
+	mailWorkerService repositories.MailRepository, phoneWorkerService repositories.PhoneRepository) *ReadinessUsecase {
 	return &ReadinessUsecase{
 		dbWorkerService,
 		mailWorkerService,
+		phoneWorkerService,
 	}
 }
 
@@ -29,7 +32,7 @@ func (readinessUsecase *ReadinessUsecase) Execute(ctx *gin.Context) interface{} 
 	transactionId := uuid.NewString()
 	start := time.Now()
 	status := readinessUsecase.dbWorkerService.IsUp()
-	data := map[string]interface{}{"status": "MySQL and SMTP are up"}
+	data := map[string]interface{}{"status": "MySQL, SMTP and PhoneServer are up"}
 
 	if !status {
 		log.Println("MySQL is not up")
@@ -43,6 +46,15 @@ func (readinessUsecase *ReadinessUsecase) Execute(ctx *gin.Context) interface{} 
 	if !status {
 		log.Println("SMTP is not up")
 		data = map[string]interface{}{"user_message": "SMTP is not up"}
+		timeElapsed := fmt.Sprint(time.Since(start).Milliseconds()) + "ms"
+		return domain.GenerateResponse(data, "failure", transactionId, timestamp, timeElapsed, 500)
+	}
+
+	status = readinessUsecase.phoneWorkerService.IsUp()
+
+	if !status {
+		log.Println("Phone Server is not up")
+		data = map[string]interface{}{"user_message": "Phone Server is not up"}
 		timeElapsed := fmt.Sprint(time.Since(start).Milliseconds()) + "ms"
 		return domain.GenerateResponse(data, "failure", transactionId, timestamp, timeElapsed, 500)
 	}

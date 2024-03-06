@@ -17,11 +17,14 @@ func ContainerReadiness() *usecases.ReadinessUsecase {
 		settings.SmtpPass,
 		settings.SmtpPort,
 	)
+	phoneServer := infrastructure.NewPhoneServer()
 	dbWorkerRepository := databases.NewMySQLWorkerRepository(mysqlDb)
 	mailWorkerRepository := servers.NewMailWorkerRepository(mailServer)
+	phoneWorkerRepository := servers.NewPhoneWorkerRepository(phoneServer)
 	dbWorkerService := services.NewDBWorkerService(dbWorkerRepository)
 	mailWorkerService := services.NewMailWorkerService(mailWorkerRepository)
-	readinessUsecase := usecases.NewReadinessUsecase(dbWorkerService, mailWorkerService)
+	phoneWorkerService := services.NewPhoneWorkerService(phoneWorkerRepository)
+	readinessUsecase := usecases.NewReadinessUsecase(dbWorkerService, mailWorkerService, phoneWorkerService)
 	return readinessUsecase
 }
 
@@ -67,4 +70,16 @@ func ContainerValidateEmail() *usecases.ValidateEmailUsecase {
 	dbWorkerService := services.NewDBWorkerService(dbWorkerRepository)
 	validateEmailUsecase := usecases.NewValidateEmailUsecase(dbWorkerService)
 	return validateEmailUsecase
+}
+
+func ContainerConfirmPhone() *usecases.ConfirmPhoneUsecase {
+	settings := infrastructure.NewSettings()
+	mysqlDb := infrastructure.NewMySQLDatabase(settings.DriverName, settings.DataSourceName)
+	phoneServer := infrastructure.NewPhoneServer()
+	dbWorkerRepository := databases.NewMySQLWorkerRepository(mysqlDb)
+	phoneWorkerRepository := servers.NewPhoneWorkerRepository(phoneServer)
+	dbWorkerService := services.NewDBWorkerService(dbWorkerRepository)
+	phoneWorkerService := services.NewPhoneWorkerService(phoneWorkerRepository)
+	confirmPhoneUsecase := usecases.NewConfirmPhoneUsecase(dbWorkerService, phoneWorkerService, settings)
+	return confirmPhoneUsecase
 }

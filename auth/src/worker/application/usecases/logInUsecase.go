@@ -42,7 +42,7 @@ func (logInUsecase *LogInUsecase) Execute(ctx *gin.Context) interface{} {
 		return domain.GenerateResponse(data, "failure", transactionId, timestamp, timeElapsed, 400)
 	}
 
-	if !userDB.Verified {
+	if !userDB.VerifiedEmail {
 		log.Println("User not verified")
 		data := map[string]interface{}{"user_message": "Please verify your email"}
 		timeElapsed := fmt.Sprint(time.Since(start).Milliseconds()) + "ms"

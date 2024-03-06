@@ -12,6 +12,8 @@ import (
 var once sync.Once
 var mysqlWorkerRepository *MySQLWorkerRepository
 var messageError = "Failed to create sql query:"
+var messageUpdate = "Failed to update user:"
+var messageBindData = "Failed to bind data to user:"
 
 type MySQLWorkerRepository struct {
 	sessionFactory domain.Database
@@ -41,7 +43,7 @@ func (mysqlWorkerRepository *MySQLWorkerRepository) IsUp() bool {
 }
 
 func (mysqlWorkerRepository *MySQLWorkerRepository) GetUserByEmail(email string) *entities.User {
-	query, args, err := squirrel.Select("id", "name", "lastname", "password", "email", "verified", "phone", "rol").
+	query, args, err := squirrel.Select("id", "name", "lastname", "password", "email", "verifiedemail", "phone", "rol").
 		From("users").
 		Where(squirrel.Eq{"email": email}).
 		ToSql()
@@ -59,22 +61,22 @@ func (mysqlWorkerRepository *MySQLWorkerRepository) GetUserByEmail(email string)
 		&user.Lastname,
 		&user.Password,
 		&user.Email,
-		&user.Verified,
+		&user.VerifiedEmail,
 		&user.Phone,
 		&user.Rol,
 	)
 	if err != nil {
-		log.Println("Failed to bind data to user:", err)
+		log.Println(messageBindData, err)
 		return nil
 	}
 
 	return &user
 }
 
-func (mysqlWorkerRepository *MySQLWorkerRepository) UpdateUserVerification(code string) bool {
-	query, args, err := squirrel.Select("verified", "email").
+func (mysqlWorkerRepository *MySQLWorkerRepository) UpdateUserEmailVerification(code string) bool {
+	query, args, err := squirrel.Select("verifiedemail", "email").
 		From("users").
-		Where(squirrel.Eq{"code": code}).
+		Where(squirrel.Eq{"codeemail": code}).
 		ToSql()
 	var verified bool
 	var email string
@@ -87,18 +89,18 @@ func (mysqlWorkerRepository *MySQLWorkerRepository) UpdateUserVerification(code 
 	row := db.QueryRow(query, args...)
 	err = row.Scan(&verified, &email)
 	if err != nil {
-		log.Println("Failed to bind data to user:", err)
+		log.Println(messageBindData, err)
 		return false
 	}
 
 	if verified {
-		log.Println("User verified, ", email)
+		log.Println("User verified with mail, ", email)
 		return false
 	}
 
 	query, args, err = squirrel.Update("users").
-		Set("code", "").
-		Set("verified", true).
+		Set("codeemail", "").
+		Set("verifiedemail", true).
 		Where(squirrel.Eq{"email": email}).
 		ToSql()
 	if err != nil {
@@ -108,7 +110,7 @@ func (mysqlWorkerRepository *MySQLWorkerRepository) UpdateUserVerification(code 
 
 	_, err = db.Exec(query, args...)
 	if err != nil {
-		log.Println("Failed to update user:", err)
+		log.Println(messageUpdate, err)
 		return false
 	}
 
@@ -135,9 +137,9 @@ func (mysqlWorkerRepository *MySQLWorkerRepository) CreateUser(user *entities.Us
 	return true
 }
 
-func (mysqlWorkerRepository *MySQLWorkerRepository) UpdateUserVerificationCode(email, code string) bool {
+func (mysqlWorkerRepository *MySQLWorkerRepository) UpdateUserEmailVerificationCode(email, code string) bool {
 	query, args, err := squirrel.Update("users").
-		Set("code", code).
+		Set("codeemail", code).
 		Where(squirrel.Eq{"email": email}).
 		ToSql()
 	if err != nil {
@@ -148,7 +150,71 @@ func (mysqlWorkerRepository *MySQLWorkerRepository) UpdateUserVerificationCode(e
 	db := mysqlWorkerRepository.sessionFactory.GetDb()
 	_, err = db.Exec(query, args...)
 	if err != nil {
-		log.Println("Failed to update user:", err)
+		log.Println(messageUpdate, err)
+		return false
+	}
+
+	return true
+}
+
+func (mysqlWorkerRepository *MySQLWorkerRepository) UpdateUserPhoneVerificationCode(email, code string) bool {
+	query, args, err := squirrel.Update("users").
+		Set("codephone", code).
+		Where(squirrel.Eq{"email": email}).
+		ToSql()
+	if err != nil {
+		log.Println(messageError, err)
+		return false
+	}
+
+	db := mysqlWorkerRepository.sessionFactory.GetDb()
+	_, err = db.Exec(query, args...)
+	if err != nil {
+		log.Println(messageUpdate, err)
+		return false
+	}
+
+	return true
+}
+
+func (mysqlWorkerRepository *MySQLWorkerRepository) UpdateUserPhoneVerification(code string) bool {
+	query, args, err := squirrel.Select("verifiedphone", "email").
+		From("users").
+		Where(squirrel.Eq{"codephone": code}).
+		ToSql()
+	var verified bool
+	var email string
+	if err != nil {
+		log.Println(messageError, err)
+		return false
+	}
+
+	db := mysqlWorkerRepository.sessionFactory.GetDb()
+	row := db.QueryRow(query, args...)
+	err = row.Scan(&verified, &email)
+	if err != nil {
+		log.Println(messageBindData, err)
+		return false
+	}
+
+	if verified {
+		log.Println("User verified with phone, ", email)
+		return false
+	}
+
+	query, args, err = squirrel.Update("users").
+		Set("codephone", "").
+		Set("verifiedphone", true).
+		Where(squirrel.Eq{"email": email}).
+		ToSql()
+	if err != nil {
+		log.Println(messageError, err)
+		return false
+	}
+
+	_, err = db.Exec(query, args...)
+	if err != nil {
+		log.Println(messageUpdate, err)
 		return false
 	}
 

@@ -27,10 +27,18 @@ func (dbWorkerService *DBWorkerService) GetUserByEmail(email string) *entities.U
 	return dbWorkerService.db.GetUserByEmail(email)
 }
 
-func (dbWorkerService *DBWorkerService) UpdateUserVerificationCode(email, code string) bool {
-	return dbWorkerService.db.UpdateUserVerificationCode(email, code)
+func (dbWorkerService *DBWorkerService) UpdateUserEmailVerificationCode(email, code string) bool {
+	return dbWorkerService.db.UpdateUserEmailVerificationCode(email, code)
 }
 
-func (dbWorkerService *DBWorkerService) UpdateUserVerification(code string) bool {
-	return dbWorkerService.db.UpdateUserVerification(code)
+func (dbWorkerService *DBWorkerService) UpdateUserEmailVerification(code string) bool {
+	return dbWorkerService.db.UpdateUserEmailVerification(code)
+}
+
+func (dbWorkerService *DBWorkerService) UpdateUserPhoneVerificationCode(email, code string) bool {
+	return dbWorkerService.db.UpdateUserPhoneVerificationCode(email, code)
+}
+
+func (dbWorkerService *DBWorkerService) UpdateUserPhoneVerification(code string) bool {
+	return dbWorkerService.db.UpdateUserPhoneVerification(code)
 }
