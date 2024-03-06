@@ -6,23 +6,39 @@ import (
 )
 
 type DBWorkerService struct {
-	sessionFactory repositories.DBRepository
+	db repositories.DBRepository
 }
 
-func NewDBWorkerService(sessionFactory repositories.DBRepository) *DBWorkerService {
+func NewDBWorkerService(db repositories.DBRepository) *DBWorkerService {
 	return &DBWorkerService{
-		sessionFactory,
+		db,
 	}
 }
 
-func (dbWorkerRepository *DBWorkerService) IsUp() bool {
-	return dbWorkerRepository.sessionFactory.IsUp()
+func (dbWorkerService *DBWorkerService) IsUp() bool {
+	return dbWorkerService.db.IsUp()
 }
 
-func (dbWorkerRepository *DBWorkerService) CreateUser(user *entities.User) bool {
-	return dbWorkerRepository.sessionFactory.CreateUser(user)
+func (dbWorkerService *DBWorkerService) CreateUser(user *entities.User) bool {
+	return dbWorkerService.db.CreateUser(user)
 }
 
-func (dbWorkerRepository *DBWorkerService) GetUserByEmail(email string) map[string]interface{} {
-	return dbWorkerRepository.sessionFactory.GetUserByEmail(email)
+func (dbWorkerService *DBWorkerService) GetUserByEmail(email string) *entities.User {
+	return dbWorkerService.db.GetUserByEmail(email)
+}
+
+func (dbWorkerService *DBWorkerService) UpdateUserEmailVerificationCode(email, code string) bool {
+	return dbWorkerService.db.UpdateUserEmailVerificationCode(email, code)
+}
+
+func (dbWorkerService *DBWorkerService) UpdateUserEmailVerification(code string) bool {
+	return dbWorkerService.db.UpdateUserEmailVerification(code)
+}
+
+func (dbWorkerService *DBWorkerService) UpdateUserPhoneVerificationCode(email, code string) bool {
+	return dbWorkerService.db.UpdateUserPhoneVerificationCode(email, code)
+}
+
+func (dbWorkerService *DBWorkerService) UpdateUserPhoneVerification(code string) bool {
+	return dbWorkerService.db.UpdateUserPhoneVerification(code)
 }
