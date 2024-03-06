@@ -10,6 +10,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/fatih/structs"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/thanhpk/randstr"
@@ -82,10 +83,12 @@ func (signUpUsecase *SignUpUsecase) Execute(ctx *gin.Context) interface{} {
 	err := signUpUsecase.mailWorkerService.SendMail(&emailData)
 
 	if err != nil {
+		payload := structs.Map(emailData)
+		payload = utils.Lower(payload).(map[string]interface{})
 		log.Println("Error sending email:", err)
 		data := map[string]interface{}{
 			"internal_message": "Error sending email",
-			"code":             code,
+			"email_data":       payload,
 		}
 		timeElapsed := fmt.Sprint(time.Since(start).Milliseconds()) + "ms"
 		return domain.GenerateResponse(data, "failure", transactionId, timestamp, timeElapsed, 500)

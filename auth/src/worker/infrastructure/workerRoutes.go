@@ -36,6 +36,6 @@ func Routes(route *gin.Engine) {
 	confirmationsGroup := route.Group(prefix)
 	{
 		confirmationsGroup.POST("/confirmations/phone", middlewares.ValidateBearerToken, ConfirmPhone)
-		confirmationsGroup.POST("/confirmations/email")
+		confirmationsGroup.POST("/confirmations/email", middlewares.ValidateEmailData, ConfirmEmail)
 	}
 }

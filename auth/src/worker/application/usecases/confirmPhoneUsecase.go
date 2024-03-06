@@ -60,16 +60,15 @@ func (confirmPhoneUsecase *ConfirmPhoneUsecase) Execute(response map[string]inte
 	message := entities.Message{
 		To:   fmt.Sprintf("whatsapp:%s", phone),
 		From: confirmPhoneUsecase.settings.PhoneFrom,
-		Body: fmt.Sprintf("Hi %s, this is your verification code: %s. For your security, do not share your code.", name, code),
+		Body: fmt.Sprintf("Hi %s, this is your verification code: *%s*. For your security, do not share your code.", name, code),
 	}
 
 	err := confirmPhoneUsecase.phoneWorkerService.SendMessage(&message)
 
 	if err != nil {
-		log.Println("Error sending phone:", err)
+		log.Println("Error sending message:", err)
 		data := map[string]interface{}{
-			"internal_message": "Error sending phone",
-			"code":             code,
+			"internal_message": "Error sending message",
 		}
 		timeElapsed := fmt.Sprint(time.Since(start).Milliseconds()) + "ms"
 		return domain.GenerateResponse(data, "failure", transactionId, timestamp, timeElapsed, 500)

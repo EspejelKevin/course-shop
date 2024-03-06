@@ -109,3 +109,26 @@ func ValidateVerificationCode(ctx *gin.Context) {
 	ctx.Set("code", verificationCode.Code)
 	ctx.Next()
 }
+
+func ValidateEmailData(ctx *gin.Context) {
+	log.Println("Starting middleware ValidateEmailData")
+	var emailData entities.Email
+	timestamp := time.Now().Format(time.Stamp)
+	transactionId := uuid.NewString()
+	start := time.Now()
+
+	if err := ctx.ShouldBindJSON(&emailData); err != nil {
+		data := map[string]interface{}{
+			"user_message": invalidParameters,
+			"details":      utils.ValidationMsg(err),
+		}
+		timeElapsed := fmt.Sprint(time.Since(start).Milliseconds()) + "ms"
+		response := domain.GenerateResponse(data, "failure", transactionId, timestamp, timeElapsed, 400)
+		content, _ := response.(domain.FailureResponse)
+		ctx.JSON(content.StatusCode, content.Response)
+		ctx.Abort()
+		return
+	}
+	ctx.Set("emailData", emailData)
+	ctx.Next()
+}

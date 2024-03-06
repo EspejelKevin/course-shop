@@ -83,3 +83,17 @@ func ContainerConfirmPhone() *usecases.ConfirmPhoneUsecase {
 	confirmPhoneUsecase := usecases.NewConfirmPhoneUsecase(dbWorkerService, phoneWorkerService, settings)
 	return confirmPhoneUsecase
 }
+
+func ContainerConfirmEmail() *usecases.ConfirmEmailUsecase {
+	settings := infrastructure.NewSettings()
+	mailServer := infrastructure.NewMailServer(
+		settings.SmtpHost,
+		settings.SmtpUser,
+		settings.SmtpPass,
+		settings.SmtpPort,
+	)
+	mailWorkerRepository := servers.NewMailWorkerRepository(mailServer)
+	mailWorkerService := services.NewMailWorkerService(mailWorkerRepository)
+	confirmEmailUsecase := usecases.NewConfirmEmailUsecase(mailWorkerService, settings)
+	return confirmEmailUsecase
+}

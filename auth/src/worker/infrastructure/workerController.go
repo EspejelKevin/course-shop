@@ -87,3 +87,14 @@ func ConfirmPhone(ctx *gin.Context) {
 		ctx.JSON(content.StatusCode, content.Response)
 	}
 }
+
+func ConfirmEmail(ctx *gin.Context) {
+	usecase := container.ContainerConfirmEmail()
+	data := usecase.Execute(ctx)
+	switch content := data.(type) {
+	case domain.FailureResponse:
+		ctx.JSON(content.StatusCode, content.Response)
+	case domain.SuccessResponse:
+		ctx.JSON(content.StatusCode, content.Response)
+	}
+}
