@@ -2,6 +2,7 @@ package container
 
 import (
 	"auth/src/shared/infrastructure"
+	"auth/src/shared/logger"
 	"auth/src/worker/application/services"
 	"auth/src/worker/application/usecases"
 	"auth/src/worker/infrastructure/databases"
@@ -37,11 +38,12 @@ func ContainerSignUp() *usecases.SignUpUsecase {
 		settings.SmtpPass,
 		settings.SmtpPort,
 	)
+	log := logger.NewLogger()
 	dbWorkerRepository := databases.NewMySQLWorkerRepository(mysqlDb)
 	mailWorkerRepository := servers.NewMailWorkerRepository(mailServer)
 	dbWorkerService := services.NewDBWorkerService(dbWorkerRepository)
 	mailWorkerService := services.NewMailWorkerService(mailWorkerRepository)
-	signUpUsecase := usecases.NewSignUpUsecase(dbWorkerService, mailWorkerService, settings)
+	signUpUsecase := usecases.NewSignUpUsecase(dbWorkerService, mailWorkerService, settings, log)
 	return signUpUsecase
 }
 

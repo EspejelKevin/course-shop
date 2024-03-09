@@ -3,6 +3,7 @@ package usecases
 import (
 	"auth/src/shared/domain"
 	"auth/src/shared/infrastructure"
+	"auth/src/shared/logger"
 	"auth/src/shared/utils"
 	"auth/src/worker/domain/entities"
 	"auth/src/worker/domain/repositories"
@@ -20,21 +21,24 @@ type SignUpUsecase struct {
 	dbWorkerService   repositories.DBRepository
 	settings          *infrastructure.Settings
 	mailWorkerService repositories.MailRepository
+	log               *logger.Log
 }
 
 func NewSignUpUsecase(dbWorkerService repositories.DBRepository, mailWorkerService repositories.MailRepository,
-	settings *infrastructure.Settings) *SignUpUsecase {
+	settings *infrastructure.Settings, log *logger.Log) *SignUpUsecase {
 	return &SignUpUsecase{
 		dbWorkerService,
 		settings,
 		mailWorkerService,
+		log,
 	}
 }
 
 func (signUpUsecase *SignUpUsecase) Execute(ctx *gin.Context) interface{} {
-	log.Println("Starting signUp usecase")
-	timestamp := time.Now().Format(time.Stamp)
 	transactionId := uuid.NewString()
+	signUpUsecase.log.TracingId = transactionId
+	signUpUsecase.log.Info("internal", "SingUp usecase", "Start sign up", nil)
+	timestamp := time.Now().Format(time.Stamp)
 	start := time.Now()
 	_user, _ := ctx.Get("user")
 	user := _user.(entities.User)
