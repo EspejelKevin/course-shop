@@ -2,9 +2,12 @@ package databases
 
 import (
 	"auth/src/shared/domain"
+	"auth/src/shared/logger"
 	"auth/src/worker/domain/entities"
+	"fmt"
 	"log"
 	"sync"
+	"time"
 
 	"github.com/Masterminds/squirrel"
 )
@@ -28,15 +31,18 @@ func NewMySQLWorkerRepository(sessionFactory domain.Database) *MySQLWorkerReposi
 	return mysqlWorkerRepository
 }
 
-func (mysqlWorkerRepository *MySQLWorkerRepository) IsUp() bool {
+func (mysqlWorkerRepository *MySQLWorkerRepository) IsUp(log *logger.Log) bool {
+	start := time.Now()
 	data := mysqlWorkerRepository.sessionFactory.IsUp()
 	status := data["status"].(bool)
 	message := data["message"].(string)
+	timeElapsed := fmt.Sprint(time.Since(start).Milliseconds()) + "ms"
+	measurement := logger.Measurement{TimeElapsed: timeElapsed, Object: map[string]interface{}{}}
 
 	if status {
-		log.Println("MySQL is up", message)
+		log.Info("External", "MySQL", message, &measurement)
 	} else {
-		log.Println("MySQL is down", message)
+		log.Error("External", "MySQL", "MySQL is down", message, &measurement)
 	}
 
 	return status

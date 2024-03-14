@@ -36,7 +36,7 @@ func (phoneServer *PhoneServer) IsUp() map[string]interface{} {
 	params := &openapi.CreateMessageParams{}
 	params.SetTo("whatsapp:+5217731088261")
 	params.SetFrom("whatsapp:+14155238886")
-	params.SetBody("<h1>Success</h1>")
+	params.SetBody("**Success**")
 
 	_, err := phoneServer.client.Api.CreateMessage(params)
 

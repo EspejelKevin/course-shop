@@ -1,6 +1,7 @@
 package services
 
 import (
+	"auth/src/shared/logger"
 	"auth/src/worker/domain/entities"
 	"auth/src/worker/domain/repositories"
 )
@@ -15,8 +16,8 @@ func NewMailWorkerService(mail repositories.MailRepository) *MailWorkerService {
 	}
 }
 
-func (mailWorkerService *MailWorkerService) IsUp() bool {
-	return mailWorkerService.mail.IsUp()
+func (mailWorkerService *MailWorkerService) IsUp(log *logger.Log) bool {
+	return mailWorkerService.mail.IsUp(log)
 }
 
 func (mailWorkerService *MailWorkerService) SendMail(email *entities.Email) error {

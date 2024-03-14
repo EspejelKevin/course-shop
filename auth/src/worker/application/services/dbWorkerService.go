@@ -1,6 +1,7 @@
 package services
 
 import (
+	"auth/src/shared/logger"
 	"auth/src/worker/domain/entities"
 	"auth/src/worker/domain/repositories"
 )
@@ -15,8 +16,8 @@ func NewDBWorkerService(db repositories.DBRepository) *DBWorkerService {
 	}
 }
 
-func (dbWorkerService *DBWorkerService) IsUp() bool {
-	return dbWorkerService.db.IsUp()
+func (dbWorkerService *DBWorkerService) IsUp(log *logger.Log) bool {
+	return dbWorkerService.db.IsUp(log)
 }
 
 func (dbWorkerService *DBWorkerService) CreateUser(user *entities.User) bool {

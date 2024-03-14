@@ -1,9 +1,12 @@
 package repositories
 
-import "auth/src/worker/domain/entities"
+import (
+	"auth/src/shared/logger"
+	"auth/src/worker/domain/entities"
+)
 
 type DBRepository interface {
-	IsUp() bool
+	IsUp(log *logger.Log) bool
 	GetUserByEmail(email string) *entities.User
 	CreateUser(user *entities.User) bool
 	UpdateUserEmailVerification(code string) bool

@@ -19,13 +19,14 @@ func ContainerReadiness() *usecases.ReadinessUsecase {
 		settings.SmtpPort,
 	)
 	phoneServer := infrastructure.NewPhoneServer()
+	log := logger.NewLogger()
 	dbWorkerRepository := databases.NewMySQLWorkerRepository(mysqlDb)
 	mailWorkerRepository := servers.NewMailWorkerRepository(mailServer)
 	phoneWorkerRepository := servers.NewPhoneWorkerRepository(phoneServer)
 	dbWorkerService := services.NewDBWorkerService(dbWorkerRepository)
 	mailWorkerService := services.NewMailWorkerService(mailWorkerRepository)
 	phoneWorkerService := services.NewPhoneWorkerService(phoneWorkerRepository)
-	readinessUsecase := usecases.NewReadinessUsecase(dbWorkerService, mailWorkerService, phoneWorkerService)
+	readinessUsecase := usecases.NewReadinessUsecase(dbWorkerService, mailWorkerService, phoneWorkerService, log)
 	return readinessUsecase
 }
 
@@ -50,36 +51,40 @@ func ContainerSignUp() *usecases.SignUpUsecase {
 func ContainerLogIn() *usecases.LogInUsecase {
 	settings := infrastructure.NewSettings()
 	mysqlDb := infrastructure.NewMySQLDatabase(settings.DriverName, settings.DataSourceName)
+	log := logger.NewLogger()
 	dbWorkerRepository := databases.NewMySQLWorkerRepository(mysqlDb)
 	dbWorkerService := services.NewDBWorkerService(dbWorkerRepository)
-	loginUsecase := usecases.NewLogInUsecase(dbWorkerService)
+	loginUsecase := usecases.NewLogInUsecase(dbWorkerService, log)
 	return loginUsecase
 }
 
 func ContainerValidateToken() *usecases.ValidateTokenUsecase {
 	settings := infrastructure.NewSettings()
 	mysqlDb := infrastructure.NewMySQLDatabase(settings.DriverName, settings.DataSourceName)
+	log := logger.NewLogger()
 	dbWorkerRepository := databases.NewMySQLWorkerRepository(mysqlDb)
 	dbWorkerService := services.NewDBWorkerService(dbWorkerRepository)
-	validateTokenUsecase := usecases.NewValidateTokenUsecase(dbWorkerService)
+	validateTokenUsecase := usecases.NewValidateTokenUsecase(dbWorkerService, log)
 	return validateTokenUsecase
 }
 
 func ContainerValidateEmail() *usecases.ValidateEmailUsecase {
 	settings := infrastructure.NewSettings()
 	mysqlDb := infrastructure.NewMySQLDatabase(settings.DriverName, settings.DataSourceName)
+	log := logger.NewLogger()
 	dbWorkerRepository := databases.NewMySQLWorkerRepository(mysqlDb)
 	dbWorkerService := services.NewDBWorkerService(dbWorkerRepository)
-	validateEmailUsecase := usecases.NewValidateEmailUsecase(dbWorkerService)
+	validateEmailUsecase := usecases.NewValidateEmailUsecase(dbWorkerService, log)
 	return validateEmailUsecase
 }
 
 func ContainerValidatePhone() *usecases.ValidatePhoneUsecase {
 	settings := infrastructure.NewSettings()
 	mysqlDb := infrastructure.NewMySQLDatabase(settings.DriverName, settings.DataSourceName)
+	log := logger.NewLogger()
 	dbWorkerRepository := databases.NewMySQLWorkerRepository(mysqlDb)
 	dbWorkerService := services.NewDBWorkerService(dbWorkerRepository)
-	validatePhoneUsecase := usecases.NewValidatePhoneUsecase(dbWorkerService)
+	validatePhoneUsecase := usecases.NewValidatePhoneUsecase(dbWorkerService, log)
 	return validatePhoneUsecase
 }
 
@@ -87,11 +92,12 @@ func ContainerConfirmPhone() *usecases.ConfirmPhoneUsecase {
 	settings := infrastructure.NewSettings()
 	mysqlDb := infrastructure.NewMySQLDatabase(settings.DriverName, settings.DataSourceName)
 	phoneServer := infrastructure.NewPhoneServer()
+	log := logger.NewLogger()
 	dbWorkerRepository := databases.NewMySQLWorkerRepository(mysqlDb)
 	phoneWorkerRepository := servers.NewPhoneWorkerRepository(phoneServer)
 	dbWorkerService := services.NewDBWorkerService(dbWorkerRepository)
 	phoneWorkerService := services.NewPhoneWorkerService(phoneWorkerRepository)
-	confirmPhoneUsecase := usecases.NewConfirmPhoneUsecase(dbWorkerService, phoneWorkerService, settings)
+	confirmPhoneUsecase := usecases.NewConfirmPhoneUsecase(dbWorkerService, phoneWorkerService, settings, log)
 	return confirmPhoneUsecase
 }
 
@@ -103,8 +109,9 @@ func ContainerConfirmEmail() *usecases.ConfirmEmailUsecase {
 		settings.SmtpPass,
 		settings.SmtpPort,
 	)
+	log := logger.NewLogger()
 	mailWorkerRepository := servers.NewMailWorkerRepository(mailServer)
 	mailWorkerService := services.NewMailWorkerService(mailWorkerRepository)
-	confirmEmailUsecase := usecases.NewConfirmEmailUsecase(mailWorkerService, settings)
+	confirmEmailUsecase := usecases.NewConfirmEmailUsecase(mailWorkerService, settings, log)
 	return confirmEmailUsecase
 }

@@ -1,8 +1,11 @@
 package repositories
 
-import "auth/src/worker/domain/entities"
+import (
+	"auth/src/shared/logger"
+	"auth/src/worker/domain/entities"
+)
 
 type PhoneRepository interface {
-	IsUp() bool
+	IsUp(log *logger.Log) bool
 	SendMessage(message *entities.Message) error
 }
