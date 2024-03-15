@@ -1,6 +1,7 @@
 package services
 
 import (
+	"auth/src/shared/logger"
 	"auth/src/worker/domain/entities"
 	"auth/src/worker/domain/repositories"
 )
@@ -15,8 +16,8 @@ func NewPhoneWorkerService(phoneServer repositories.PhoneRepository) *PhoneWorke
 	}
 }
 
-func (phoneWorkerService *PhoneWorkerService) IsUp() bool {
-	return phoneWorkerService.phoneServer.IsUp()
+func (phoneWorkerService *PhoneWorkerService) IsUp(log *logger.Log) bool {
+	return phoneWorkerService.phoneServer.IsUp(log)
 }
 
 func (phoneWorkerService *PhoneWorkerService) SendMessage(message *entities.Message) error {

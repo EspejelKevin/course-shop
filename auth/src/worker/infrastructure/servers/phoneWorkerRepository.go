@@ -2,9 +2,12 @@ package servers
 
 import (
 	"auth/src/shared/domain"
+	"auth/src/shared/logger"
 	"auth/src/worker/domain/entities"
+	"fmt"
 	"log"
 	"sync"
+	"time"
 
 	openapi "github.com/twilio/twilio-go/rest/api/v2010"
 )
@@ -29,15 +32,18 @@ func NewPhoneWorkerRepository(client domain.Phone) *PhoneWorkerRepository {
 	return phoneWorkerRepository
 }
 
-func (phoneWorkerRepository *PhoneWorkerRepository) IsUp() bool {
+func (phoneWorkerRepository *PhoneWorkerRepository) IsUp(log *logger.Log) bool {
+	start := time.Now()
 	data := phoneWorkerRepository.client.IsUp()
 	status := data["status"].(bool)
 	message := data["message"].(string)
+	timeElapsed := fmt.Sprint(time.Since(start).Milliseconds()) + "ms"
+	measurement := logger.Measurement{TimeElapsed: timeElapsed, Object: map[string]interface{}{}}
 
 	if status {
-		log.Println("Twilio Server is up", message)
+		log.Info("External", "Twilio", message, &measurement)
 	} else {
-		log.Println("Twilio Server is down", message)
+		log.Error("External", "Twilio", "Twilio is down", message, &measurement)
 	}
 
 	return status

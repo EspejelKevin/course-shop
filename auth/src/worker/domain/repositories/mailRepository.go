@@ -1,8 +1,11 @@
 package repositories
 
-import "auth/src/worker/domain/entities"
+import (
+	"auth/src/shared/logger"
+	"auth/src/worker/domain/entities"
+)
 
 type MailRepository interface {
-	IsUp() bool
+	IsUp(log *logger.Log) bool
 	SendMail(email *entities.Email) error
 }

@@ -2,11 +2,14 @@ package servers
 
 import (
 	"auth/src/shared/domain"
+	"auth/src/shared/logger"
 	"auth/src/shared/utils"
 	"auth/src/worker/domain/entities"
 	"bytes"
+	"fmt"
 	"log"
 	"sync"
+	"time"
 
 	"gopkg.in/gomail.v2"
 )
@@ -31,15 +34,18 @@ func NewMailWorkerRepository(mail domain.Mail) *MailWorkerRepository {
 	return mailWorkerRepository
 }
 
-func (mailWorkerRepository *MailWorkerRepository) IsUp() bool {
+func (mailWorkerRepository *MailWorkerRepository) IsUp(log *logger.Log) bool {
+	start := time.Now()
 	data := mailWorkerRepository.mail.IsUp()
 	status := data["status"].(bool)
 	message := data["message"].(string)
+	timeElapsed := fmt.Sprint(time.Since(start).Milliseconds()) + "ms"
+	measurement := logger.Measurement{TimeElapsed: timeElapsed, Object: map[string]interface{}{}}
 
 	if status {
-		log.Println("SMTP is up", message)
+		log.Info("External", "SMTP Gmail", message, &measurement)
 	} else {
-		log.Println("SMTP is down", message)
+		log.Error("External", "SMTP Gmail", "SMTP is down", message, &measurement)
 	}
 
 	return status
